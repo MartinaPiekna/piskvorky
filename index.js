@@ -1,6 +1,6 @@
 'use strict';
 
-//tvorba hrací plochy
+// tvorba hrací plochy
 const BtnGrid = () => {
   let elem = '';
   let i = 0;
@@ -20,21 +20,24 @@ const InnerElm = () => {
 const btnElm = document.querySelector('#grid');
 btnElm.innerHTML = InnerElm() + BtnGrid();
 
-// výchozí tah hraje kolečko
+// první tah hraje kolečko
 let player = 'circle';
 
+// fce pro první tah
 const FirstMove = () => {
   return `<img class="image__svg" src="./images/circle.svg"/>`;
 };
 
+// na element hráče připojit element svg pro první tah
 const playerElm = document.querySelector('#player');
 playerElm.innerHTML = FirstMove();
 
-//tvorba svg elementu pro zobrazení střídání hráčů
+// tvorba svg elementu pro zobrazení střídání hráčů
 const SvgElm = (player) => {
   return `<img class="image__svg" src="./images/${player}.svg"/>`;
 };
 
+// fce pro střídání hráčů
 const playerTurn = () => {
   const playerElm = document.querySelector('#player');
   playerElm.innerHTML = SvgElm(player);
@@ -69,7 +72,6 @@ const play = () => {
         }
         button.setAttribute('disabled', true);
       }
-      //diagonalCheck(e.target);
     });
   }
 };
@@ -79,7 +81,7 @@ play();
 const boardSize = 10;
 const fields = document.querySelectorAll('.grid-item');
 
-//získej pozici z hrací plochy
+// získej pozici z hrací plochy
 const getPosition = (field) => {
   let fieldIndex = 0;
   while (fieldIndex < fields.length) {
@@ -115,15 +117,17 @@ const isWinningMove = (field) => {
 
   let i;
 
-  let inRow = 1; // Jednička pro právě vybrané políčko
-  // check doleva
+  // jednička pro právě vybrané políčko v řádku
+  let inRow = 1;
+
+  // kontrola políčka vlevo
   i = origin.column;
   while (i > 0 && symbol === getSymbol(getField(origin.row, i - 1))) {
     inRow++;
     i--;
   }
 
-  // check doprava
+  // kontrola políčka vpravo
   i = origin.column;
   while (
     i < boardSize - 1 &&
@@ -137,15 +141,17 @@ const isWinningMove = (field) => {
     return true;
   }
 
+  // jednička pro právě vybrané políčko ve sloupci
   let inColumn = 1;
-  // check nahoru
+
+  // kontrola políčka nahoru
   i = origin.column;
   while (i > 0 && symbol === getSymbol(getField(i - 1, origin.column))) {
     inColumn++;
     i--;
   }
 
-  // check dolu
+  // kontrola políčka dolu
   i = origin.column;
   while (
     i < boardSize - 1 &&
@@ -159,30 +165,78 @@ const isWinningMove = (field) => {
     return true;
   }
 
+  let diagonalRow;
+  let diagonalColumn;
+
+  // jednička pro právě vybrané políčko v diagonále vpravo
+  let diagonalRight = 1;
+
+  // diagonálně nahoru a vpravo
+  diagonalRow = origin.row;
+  diagonalColumn = origin.column;
+
+  while (
+    diagonalColumn < boardSize - 1 &&
+    diagonalRow > 0 &&
+    symbol === getSymbol(getField(diagonalRow - 1, diagonalColumn + 1))
+  ) {
+    diagonalRight += 1;
+    diagonalRow -= 1;
+    diagonalColumn += 1;
+  }
+
+  // diagonálně dolu a vlevo
+  diagonalRow = origin.row;
+  diagonalColumn = origin.column;
+
+  while (
+    diagonalRow < boardSize - 1 &&
+    diagonalColumn > 0 &&
+    symbol === getSymbol(getField(diagonalRow + 1, diagonalColumn - 1))
+  ) {
+    diagonalRight += 1;
+    diagonalRow += 1;
+    diagonalColumn -= 1;
+  }
+
+  if (diagonalRight >= symbolsToWin) {
+    return true;
+  }
+
+  // jednička pro právě vybrané políčko v diagonále vlevo
+  let diagonalLeft = 1;
+
+  // diagonálně nahoru a vlevo
+  diagonalRow = origin.row;
+  diagonalColumn = origin.column;
+
+  while (
+    diagonalColumn < boardSize - 1 &&
+    diagonalRow > 0 &&
+    symbol === getSymbol(getField(diagonalRow - 1, diagonalColumn - 1))
+  ) {
+    diagonalLeft += 1;
+    diagonalRow -= 1;
+    diagonalColumn -= 1;
+  }
+
+  // diagonálně dolu a vpravo
+  diagonalRow = origin.row;
+  diagonalColumn = origin.column;
+
+  while (
+    diagonalRow < boardSize - 1 &&
+    diagonalColumn > 0 &&
+    symbol === getSymbol(getField(diagonalRow + 1, diagonalColumn + 1))
+  ) {
+    diagonalLeft += 1;
+    diagonalRow += 1;
+    diagonalColumn += 1;
+  }
+
+  if (diagonalLeft >= symbolsToWin) {
+    return true;
+  }
+
   return false;
 };
-
-// nová hrací plocha
-/*
-const arrBoard = [];
-for (let i = 0; i < boardSize; i++) {
-  const newRow = [];
-  for (let j = 0; j < boardSize; j++) {
-    newRow.push(buttons[i * boardSize + j]);
-  }
-  arrBoard.push(newRow);
-}
-
-// check diagonálně
-const diagonalCheck = (field) => {
-  const origin = getPosition(field);
-  const symbol = getSymbol(field);
-  const newOrigin = { row: origin.row, column: origin.column };
-
-  for (let i = 1; i < symbolsToWin; i++) {
-    newOrigin.row = i;
-    newOrigin.column = i;
-    const newSymbol = getSymbol(arrBoard[origin.row + i][origin.column + i]);
-    console.log(newSymbol);
-  }
-};*/
